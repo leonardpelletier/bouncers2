@@ -1,29 +1,52 @@
 class Bouncer {
- 
-  float x, y, vx, vy;
+
+  float x, y, vx, vy, d;
   int h, s, b;
-  
+
   Bouncer() {
-    x = width/2;
-    y = height/2;
+    x = random(width);
+    y = random(height);
     vx = random(-5, 5);
     vy = random(-5, 5);
     h = int(random(255));
+    d = random(5, 25);
     s = 255;
     b = 255;
   }
-  
+
   void act() {
+    
+    //how the bouncer moves
     x = x + vx;
     y = y + vy;
-    if (x < 32 || x > width-32)  vx = -vx;
-    if (y < 32 || y > height-32) vy = -vy;
+
+    //bouncing off the walls
+    if (x < d/2 || x > width-d/2)  vx = -vx;
+    if (y < d/2 || y > height-d/2) vy = -vy;
+
+    //bouncing off other bouncers
+    int i = 0;
+    while (i < numBouncers) {
+      if (x != bouncers[i].x && y != bouncers[i].y  ) {
+        if (dist(x, y, bouncers[i].x, bouncers[i].y) < d/2 + bouncers[i].d/2) {
+          vx = (x - bouncers[i].x)/3;
+          vy = (y - bouncers[i].y)/3;
+        }
+      }
+      i++;
+    }
+
+    //prevent bouncers from getting stuck
+    if (x < d/2) x = d/2;
+    if (x > width-d/2) x = width-d/2;
+    if (y < d/2) y = d/2;
+    if (y > height-d/2) y = height-d/2;
   }
-  
+
   void show() {
-    strokeWeight(6);
+    strokeWeight(1);
     stroke(0);
-    fill(h,s,b);
-    circle(x,y,64);
+    fill(h, s, b);
+    circle(x, y, d);
   }
 }
